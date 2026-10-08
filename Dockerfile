@@ -8,7 +8,7 @@ ENV HOST=0.0.0.0
 ENV __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=vs-77lx.onrender.com
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends unzip \
+  && apt-get install -y --no-install-recommends unzip ffmpeg \
   && rm -rf /var/lib/apt/lists/*
 
 COPY gDFrm1D7ladISGL6-grok-workspace.zip /tmp/workspace.zip
@@ -27,7 +27,7 @@ RUN mkdir -p /tmp/workspace \
   && node /app/render-fast-start.mjs \
   && rm -f /app/render-vite-fix.mjs /tmp/render-vite-fix.mjs /tmp/render-fast-start.mjs
 
-RUN npm install --no-audit --no-fund --include=dev
+RUN npm ci --no-audit --no-fund --include=dev
 
 EXPOSE 8080
 
