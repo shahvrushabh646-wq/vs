@@ -1,16 +1,25 @@
 import fs from "node:fs";
 
-const path = "src/routes/index.tsx";
-const source = `import { createFileRoute } from "@tanstack/react-router";
+const route = "src/routes/index.tsx";
+fs.mkdirSync("src/routes", { recursive: true });
+fs.writeFileSync(route, `import { createFileRoute } from "@tanstack/react-router";
 import { Studio } from "@/components/studio/studio";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({
+  component: Studio,
+});
+`);
 
-function Home() {
-  return <Studio />;
+const db = "src/lib/db.ts";
+if (fs.existsSync(db)) {
+  let s = fs.readFileSync(db, "utf8");
+  // Do not eagerly start PGLite during module evaluation. Database callers
+  // still await ensureDbReady when they actually need persistence.
+  s = s.replace(
+    /\n\s*void ensureDbReady\(\);\s*$/m,
+    "\n",
+  );
+  fs.writeFileSync(db, s);
 }
-`;
 
-fs.mkdirSync("src/routes", { recursive: true });
-fs.writeFileSync(path, source);
-console.log("[render] Fast startup route installed");
+console.log("[render] Removed blocking boot screen and eager DB startup");
