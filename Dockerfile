@@ -5,6 +5,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOST=0.0.0.0
+ENV __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=vs-77lx.onrender.com
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends unzip \
