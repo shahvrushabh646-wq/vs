@@ -18,7 +18,7 @@ RUN unzip -q /tmp/workspace.zip -d /app \
   && test -d /app/src \
   && test -d /app/scripts
 
-RUN npm install --no-audit --no-fund
+RUN npm install --no-audit --no-fund --include=dev
 
 EXPOSE 8080
 
