@@ -719,11 +719,10 @@ export function Studio() {
     recorder.ondataavailable = (event) => {
       if (event.data.size) chunks.push(event.data);
     };
-    const stopped = new Promise<void>((resolve, reject) => {
+    const stopped = new Promise<void>((resolve) => {
       recorder.onstop = () => resolve();
       recorder.onerror = (event) => {
         recorderError = (event as Event & { error?: DOMException }).error ?? new DOMException("Video recording failed.");
-        reject(recorderError);
       };
     });
     // Emit regular chunks as well as the final stop chunk, so longer exports are
