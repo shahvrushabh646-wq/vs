@@ -1,0 +1,44 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Festival of Bharat Studio",
+      "hasCanvas": true,
+      "bodyTextLen": 18181,
+      "bodyTextHash": "4850f7e5e5d8a0cdafde8e94e82c95325cdcfaf19eb2276ccbd40ea20829b258",
+      "bodyTextPrefix": "Festival of Bharat Reel studio Media Templates Music Type Previe",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Festival of Bharat Studio",
+      "hasCanvas": true,
+      "bodyTextLen": 18079,
+      "bodyTextHash": "4c28c0df910d71fa66b23d0d1139a0f72102f6ec48cca61644d83a2a45bb6f40",
+      "bodyTextPrefix": "Festival of Bharat Studio Build Preview Photos 0 Videos 0 Select",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [
+    "BRAND WARNING: this looks like a game/canvas app but src/lib/og/site.json is missing \"type\": \"x:game\". X uses og:type=x:game to present the unfurl as a game card — set it in /workspace/src/lib/og/site.json per /workspace/.grok/skills/og/SKILL.md. Do not invent x:type or overload twitter:card as the game signal.",
+    "BRAND WARNING: this looks like a game/canvas app but /workspace/public/x-banner.jpg is missing. Games need a 50:11 X feed card (1200×264 JPEG) at public/x-banner.jpg — open /workspace/.grok/skills/og/SKILL.md and finish the brand-asset pass."
+  ],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": true,
+  "baselineReasons": [
+    "desktop: body text changed (6348 -> 18181 chars, hash mismatch)",
+    "mobile: body text changed (6246 -> 18079 chars, hash mismatch)"
+  ]
+}

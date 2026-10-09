@@ -34,20 +34,19 @@ function pgliteBootstrapPlugin(): Plugin {
   return {
     name: "app-builder:pglite-bootstrap",
     apply: "serve",
-    configureServer(server) {
+    async configureServer(server) {
       if (!hasGlobbedMigrations(server.config.root)) return;
-      // Do NOT block Vite startup on PGLite. The studio can render immediately;
-      // database initialization continues in the background and the first DB
-      // operation will await the same readiness promise from src/lib/db.ts.
-      void server.ssrLoadModule("/src/lib/db.ts").then((mod) => {
+      try {
+        const mod = (await server.ssrLoadModule("/src/lib/db.ts")) as {
+          ensureDbReady?: () => Promise<void>;
+        };
         if (typeof mod.ensureDbReady === "function") {
-          void mod.ensureDbReady().catch((err) => {
-            console.error("[app-builder] DB bootstrap failed:", err);
-          });
+          await mod.ensureDbReady();
         }
-      }).catch((err) => {
-        console.error("[app-builder] DB module preload failed:", err);
-      });
+      } catch (err) {
+        console.error("[app-builder] DB bootstrap failed:", err);
+        throw err;
+      }
     },
   };
 }
@@ -151,8 +150,6 @@ export default defineConfig(({ command, isPreview }) => ({
     host: "0.0.0.0",
     port: 8080,
     strictPort: true,
-    allowedHosts: ["vs-77lx.onrender.com"],
-    hmr: { protocol: "wss", host: "vs-77lx.onrender.com", clientPort: 443 },
   },
   preview: {
     host: "127.0.0.1",

@@ -1,3 +1,3 @@
 {
-  "installCommand": "node prepare-vercel.mjs && npm ci --no-audit --no-fund --include=dev"
+  "installCommand": "npm install --omit=dev --no-audit --no-fund"
 }
