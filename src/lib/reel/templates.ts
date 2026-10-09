@@ -112,6 +112,7 @@ export type TemplateTab = { id: TemplateTabId; label: string };
 
 /** Top tabs. Switching one replaces the shelf headings underneath, the way Canva's template browser does. */
 export const TEMPLATE_TABS: TemplateTab[] = [
+  { id: "professional", label: "Professional" },
   { id: "for-you", label: "For you" },
   { id: "social", label: "Social media" },
   { id: "video", label: "Video" },
@@ -121,7 +122,6 @@ export const TEMPLATE_TABS: TemplateTab[] = [
   { id: "business", label: "Business" },
   { id: "education", label: "Education" },
   { id: "personal", label: "Personal" },
-  { id: "professional", label: "Professional" },
 ];
 
 export type TemplateSection = {
