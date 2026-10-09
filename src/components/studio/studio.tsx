@@ -51,9 +51,10 @@ const LANGS: Record<string, string> = {
   Punjabi: "ਜੈ ਸ਼੍ਰੀ ਮਹਾਕਾਲ",
 };
 
-const NAV: Array<{ id: Workspace; label: string; icon: typeof Images }> = [
+const NAV: Array<{ id: Workspace | "professional"; label: string; icon: typeof Images }> = [
   { id: "media", label: "Media", icon: Images },
   { id: "templates", label: "Templates", icon: LayoutTemplate },
+  { id: "professional", label: "Professional", icon: LayoutTemplate },
   { id: "music", label: "Music", icon: Music },
   { id: "type", label: "Type", icon: Type },
   { id: "preview", label: "Preview", icon: Clapperboard },
@@ -828,29 +829,32 @@ export function Studio() {
         <nav>
           {NAV.map((item) => {
             const Icon = item.icon;
+            const active = item.id === "professional"
+              ? workspace === "templates" && templateTab === "professional"
+              : workspace === item.id;
             return (
-              <button key={item.id} className={workspace === item.id ? "active" : ""} type="button" onClick={() => setWorkspace(item.id)}>
+              <button
+                key={item.id}
+                data-testid={item.id === "professional" ? "professional-main-nav" : undefined}
+                className={active ? "active" : ""}
+                type="button"
+                aria-label={item.id === "professional" ? "Open Professional templates" : item.label}
+                onClick={() => {
+                  if (item.id === "professional") {
+                    setWorkspace("templates");
+                    setTemplateTab("professional");
+                    setOpenSection(null);
+                    setTemplateQuery("");
+                  } else {
+                    setWorkspace(item.id);
+                  }
+                }}
+              >
                 <Icon size={18} />
                 {item.label}
               </button>
             );
           })}
-          <button
-            key="professional"
-            data-testid="professional-main-nav"
-            className={workspace === "templates" && templateTab === "professional" ? "active" : ""}
-            type="button"
-            aria-label="Open Professional templates"
-            onClick={() => {
-              setWorkspace("templates");
-              setTemplateTab("professional");
-              setOpenSection(null);
-              setTemplateQuery("");
-            }}
-          >
-            <LayoutTemplate size={18} />
-            Professional
-          </button>
         </nav>
       </aside>
       <div className="desk">
@@ -1417,8 +1421,26 @@ export function Studio() {
       <nav className="dock">
         {NAV.map((item) => {
           const Icon = item.icon;
+          const active = item.id === "professional"
+            ? workspace === "templates" && templateTab === "professional"
+            : workspace === item.id;
           return (
-            <button key={item.id} className={workspace === item.id ? "active" : ""} type="button" onClick={() => setWorkspace(item.id)}>
+            <button
+              key={item.id}
+              className={active ? "active" : ""}
+              type="button"
+              aria-label={item.id === "professional" ? "Open Professional templates" : item.label}
+              onClick={() => {
+                if (item.id === "professional") {
+                  setWorkspace("templates");
+                  setTemplateTab("professional");
+                  setOpenSection(null);
+                  setTemplateQuery("");
+                } else {
+                  setWorkspace(item.id);
+                }
+              }}
+            >
               <Icon size={18} />
               {item.label}
             </button>
