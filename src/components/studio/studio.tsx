@@ -149,12 +149,12 @@ export function Studio() {
   const [nextOffset, setNextOffset] = useState<number | null>(null);
   const [searching, setSearching] = useState(false);
   const [mediaTab, setMediaTab] = useState<"all" | "image" | "video">("all");
-  const [templateId, setTemplateId] = useState(TEMPLATES[0]!.id);
+  const [templateId, setTemplateId] = useState(TEMPLATES.find((item) => item.sectionId === "reel-cinematic")?.id ?? TEMPLATES[0]!.id);
   const [templateTab, setTemplateTab] = useState<TemplateTabId>("professional");
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [templateQuery, setTemplateQuery] = useState("");
   const [speed, setSpeed] = useState<Speed>("medium");
-  const [duration, setDuration] = useState(TEMPLATES[0]!.duration);
+  const [duration, setDuration] = useState(TEMPLATES.find((item) => item.sectionId === "reel-cinematic")?.duration ?? TEMPLATES[0]!.duration);
   const [title, setTitle] = useState("");
   const [fontFamily, setFontFamily] = useState("Auto");
   const [fontScale, setFontScale] = useState(1);
@@ -1087,7 +1087,7 @@ export function Studio() {
           {workspace === "templates" && (
             <section className="panel templates">
               <div className="row">
-                <h2>Templates</h2>
+                <h2>Reel Templates</h2>
                 <span className="note">{TEMPLATES.length} templates · 1080×1920</span>
               </div>
               <div className="searchRow">
