@@ -1,0 +1,39 @@
+name: Extract workspace source for editing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/extract-workspace.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Extract app source into a separate branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="gDFrm1D7ladISGL6-grok-workspace.zip"
+          test -f "$archive"
+          mkdir -p /tmp/workspace
+          unzip -q "$archive" -d /tmp/workspace
+          app_root="$(find /tmp/workspace -type f -name package.json -printf '%h\n' | while read -r d; do if [ -d "$d/src" ]; then echo "$d"; break; fi; done)"
+          test -n "$app_root"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b extracted-app-source
+          cp -a "$app_root"/. .
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Extract app source for template styling work"
+            git push origin extracted-app-source
+          fi
