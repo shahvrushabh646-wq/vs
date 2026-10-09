@@ -51,14 +51,34 @@ function tintDeco(deco: Deco, ink: Ink, paper: boolean): Deco {
   return deco;
 }
 
-function signature(variant: number, ink: Ink): Deco[] {
-  const mode = variant % 6;
-  if (mode === 0) return [{ layer: "front", type: "rect", x: 0, y: 0, w: CANVAS_W, h: 12, fill: ink.accent }];
-  if (mode === 1) return [{ layer: "front", type: "rect", x: 0, y: CANVAS_H - 14, w: CANVAS_W, h: 14, fill: ink.accent }];
-  if (mode === 2) return [{ layer: "front", type: "rect", x: 0, y: 0, w: 16, h: CANVAS_H, fill: ink.accent }];
-  if (mode === 3) return [{ layer: "front", type: "letterbox", color: ink.bg, size: 86 }];
-  if (mode === 4) return [{ layer: "front", type: "vignette", strength: 0.42 }];
-  return [{ layer: "front", type: "frame", x: 28, y: 28, w: CANVAS_W - 56, h: CANVAS_H - 56, color: ink.accent, width: 3 }];
+function signature(variant: number, ink: Ink, paper: boolean): Deco[] {
+  // A restrained editorial finish: no oversized bars or heavy letterboxes.
+  // Keep the template's own palette while adding depth and a fine inset frame.
+  const inset = 30 + (variant % 4) * 3;
+  const lineLength = 96 + (variant % 5) * 16;
+  return [
+    { layer: "front", type: "vignette", strength: paper ? 0.1 : 0.24 },
+    {
+      layer: "front",
+      type: "frame",
+      x: inset,
+      y: inset,
+      w: CANVAS_W - inset * 2,
+      h: CANVAS_H - inset * 2,
+      color: ink.accent,
+      width: 2,
+    },
+    {
+      layer: "front",
+      type: "line",
+      x1: 72,
+      y1: 154,
+      x2: 72 + lineLength,
+      y2: 154,
+      color: ink.accent,
+      width: 3,
+    },
+  ];
 }
 
 function paintText(spec: TextSpec, ink: Ink, paper: boolean, template: Template): TextSpec {
@@ -117,6 +137,6 @@ export function applyLook(composition: Composition, template: Template): Composi
       };
     }),
     texts: composition.texts.map((spec) => paintText(spec, ink, paper, template)),
-    decos: composition.decos.map((deco) => tintDeco(deco, ink, paper)).concat(signature(variant, ink)),
+    decos: composition.decos.map((deco) => tintDeco(deco, ink, paper)).concat(signature(variant, ink, paper)),
   };
 }
