@@ -245,8 +245,9 @@ a.ghost {
 }
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  overflow: auto;
+  overflow: visible;
   margin: 8px 0 12px;
 }
 .tab {
