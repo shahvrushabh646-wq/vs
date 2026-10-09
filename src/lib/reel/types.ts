@@ -41,16 +41,25 @@ export type PaletteId =
 
 export type Category =
   | "Cinematic"
-  | "Editorial"
-  | "Magazine"
-  | "Memory"
-  | "Collage"
-  | "Devotional"
-  | "Festival"
+  | "Photo Slideshow"
+  | "Travel & Places"
+  | "Festivals & Culture"
+  | "Fashion & Lifestyle"
+  | "Food & Restaurants"
+  | "Product Showcase"
+  | "Business & Brand"
+  | "Real Estate"
+  | "Fitness & Sports"
+  | "Education"
+  | "Events & Celebrations"
+  | "Memories & Stories"
+  | "Minimal & Aesthetic"
+  | "Fast-Paced & Trending"
   | "Documentary"
-  | "Heritage"
-  | "Minimal"
-  | "Special";
+  | "Before & After"
+  | "Typography"
+  | "Luxury & Premium"
+  | "Creative & Experimental";
 
 export type MotionId =
   | "slow-push"
