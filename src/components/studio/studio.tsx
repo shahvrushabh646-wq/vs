@@ -149,7 +149,7 @@ export function Studio() {
   const [searching, setSearching] = useState(false);
   const [mediaTab, setMediaTab] = useState<"all" | "image" | "video">("all");
   const [templateId, setTemplateId] = useState(TEMPLATES[0]!.id);
-  const [templateTab, setTemplateTab] = useState<TemplateTabId>("for-you");
+  const [templateTab, setTemplateTab] = useState<TemplateTabId>("professional");
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [templateQuery, setTemplateQuery] = useState("");
   const [speed, setSpeed] = useState<Speed>("medium");
