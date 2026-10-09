@@ -1039,10 +1039,14 @@ export function Studio() {
                 {TEMPLATE_TABS.map((item) => (
                   <button
                     key={item.id}
+                    id={item.id === "professional" ? "professional-template-tab" : undefined}
+                    data-template-tab={item.id}
                     className={templateTab === item.id && !queryText ? "tab active" : "tab"}
                     type="button"
                     role="tab"
+                    aria-label={item.id === "professional" ? "Professional templates" : item.label}
                     aria-selected={templateTab === item.id && !queryText}
+                    style={{ display: "inline-flex", flex: "0 0 auto", whiteSpace: "nowrap", visibility: "visible", opacity: 1 }}
                     onClick={() => {
                       setTemplateTab(item.id);
                       setOpenSection(null);
