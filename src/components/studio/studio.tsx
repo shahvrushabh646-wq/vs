@@ -835,6 +835,22 @@ export function Studio() {
               </button>
             );
           })}
+          <button
+            key="professional"
+            data-testid="professional-main-nav"
+            className={workspace === "templates" && templateTab === "professional" ? "active" : ""}
+            type="button"
+            aria-label="Open Professional templates"
+            onClick={() => {
+              setWorkspace("templates");
+              setTemplateTab("professional");
+              setOpenSection(null);
+              setTemplateQuery("");
+            }}
+          >
+            <LayoutTemplate size={18} />
+            Professional
+          </button>
         </nav>
       </aside>
       <div className="desk">
