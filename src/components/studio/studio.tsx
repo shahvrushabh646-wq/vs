@@ -54,7 +54,7 @@ const LANGS: Record<string, string> = {
 const NAV: Array<{ id: Workspace | "professional"; label: string; icon: typeof Images }> = [
   { id: "media", label: "Media", icon: Images },
   { id: "templates", label: "Templates", icon: LayoutTemplate },
-  { id: "professional", label: "Reel Styles", icon: LayoutTemplate },
+  { id: "professional", label: "Professional", icon: LayoutTemplate },
   { id: "music", label: "Music", icon: Music },
   { id: "type", label: "Type", icon: Type },
   { id: "preview", label: "Preview", icon: Clapperboard },
