@@ -653,6 +653,28 @@ export function Studio() {
       return;
     }
     const token = ++playToken.current;
+    // Resolve the first scene's video seeks before recording starts. Otherwise a slow
+    // first seek can leave the recorder capturing a stale/blank opening frame.
+    try {
+      sceneMark.current = -1;
+      await syncVideos(0);
+      const initialCtx = canvas.getContext("2d");
+      if (!initialCtx) throw new Error("Preview canvas is not available.");
+      const initial = paintFrame(initialCtx, paintInput(0.001, false));
+      if (!initial.drewMedia || initial.missingTitle || !frameHasContent(initialCtx)) {
+        throw new Error("The opening frame could not be rendered completely.");
+      }
+    } catch (error) {
+      for (const item of loadedRef.current.values()) item.video?.pause();
+      setPhase("failed");
+      setProgress("");
+      setQc(qcFail({
+        template: templateRef.current.name,
+        reason: error instanceof Error ? error.message : "Opening frame preparation failed.",
+        fix: "Re-select the affected video or use a photo, then Build Preview again.",
+      }));
+      return;
+    }
     const stream = canvas.captureStream(30);
     let exportAudio: HTMLAudioElement | null = null;
     const track = musicRef.current;
@@ -693,17 +715,24 @@ export function Studio() {
       return;
     }
     const chunks: Blob[] = [];
+    let recorderError: DOMException | null = null;
     recorder.ondataavailable = (event) => {
       if (event.data.size) chunks.push(event.data);
     };
-    const stopped = new Promise<void>((resolve) => {
+    const stopped = new Promise<void>((resolve, reject) => {
       recorder.onstop = () => resolve();
+      recorder.onerror = (event) => {
+        recorderError = (event as Event & { error?: DOMException }).error ?? new DOMException("Video recording failed.");
+        reject(recorderError);
+      };
     });
-    recorder.start(200);
+    // Emit regular chunks as well as the final stop chunk, so longer exports are
+    // less vulnerable to a single large buffered recording in browser memory.
+    recorder.start(1000);
     setPhase("building");
     const started = performance.now();
     const total = durationRef.current;
-    sceneMark.current = -1;
+    sceneMark.current = 0;
     playingRef.current = true;
     while (playingRef.current && playToken.current === token) {
       const elapsed = (performance.now() - started) / 1000;
@@ -753,9 +782,28 @@ export function Studio() {
     if (ctx) paintFrame(ctx, paintInput(Math.max(0, total - 0.001), false));
     exportAudio?.pause();
     for (const item of loadedRef.current.values()) item.video?.pause();
-    recorder.stop();
-    await stopped;
-    stream.getTracks().forEach((item) => item.stop());
+    try {
+      if (recorder.state !== "inactive") recorder.stop();
+      await stopped;
+    } catch (error) {
+      stream.getTracks().forEach((item) => item.stop());
+      setPhase("failed");
+      setProgress("");
+      setQc(qcFail({
+        template: templateRef.current.name,
+        reason: error instanceof Error ? error.message : "The recorder did not finalize the complete video.",
+        fix: "Keep this tab open and export again. If it repeats, try Chrome or Edge.",
+      }));
+      return;
+    } finally {
+      stream.getTracks().forEach((item) => item.stop());
+    }
+    if (recorderError) {
+      setPhase("failed");
+      setProgress("");
+      setQc(qcFail({ reason: recorderError.message, fix: "Export again in a current Chrome or Edge browser." }));
+      return;
+    }
     const webm = new Blob(chunks, { type: mime });
     if (webm.size < 1024) {
       setPhase("failed");
