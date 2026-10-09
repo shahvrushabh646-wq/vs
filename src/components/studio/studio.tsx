@@ -1469,10 +1469,16 @@ function MediaVisual({ asset }: { asset: MediaAsset }) {
 }
 
 function downloadBlob(blob: Blob, filename: string) {
-  const link = document.createElement("a");
+  // Keep the object URL alive long enough for large reels and slower downloads.
+  // Triggering a download from a detached anchor can be unreliable in some browsers.
   const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
   link.href = url;
   link.download = filename;
+  link.style.display = "none";
+  document.body.appendChild(link);
   link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 30_000);
+  link.remove();
+  // Do not revoke early: the browser may still be streaming the blob to disk.
+  window.setTimeout(() => URL.revokeObjectURL(url), 10 * 60 * 1000);
 }
