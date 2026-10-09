@@ -219,6 +219,20 @@ export const SECTIONS: TemplateSection[] = [
   { id: "infographics", heading: "Infographics", tab: "education", noun: "Infographic", looks: ["ivory-dgrid", "teal-multi", "copper-time", "indigo-column", "gold-grid", "slate-doc", "teal-editorial", "copper-news"] },
   { id: "edu-certs", heading: "Certificates", tab: "education", noun: "Certificate", looks: ["gold-sacred", "brass-temple", "forest-heritage", "cream-frame", "indigo-sacred", "ivory-minimal", "sandal-cover", "slate-journal"] },
 
+
+  { id: "pro-corporate", heading: "Corporate & Company", tab: "professional", featured: true, noun: "Corporate Design", looks: ["indigo-column", "teal-editorial", "slate-doc", "sandal-cover", "charcoal-mono", "copper-time", "ivory-minimal", "teal-feature"] },
+  { id: "pro-brand", heading: "Brand Identity", tab: "professional", featured: true, noun: "Brand Identity", looks: ["gold-cinema", "ivory-minimal", "teal-editorial", "charcoal-mono", "sandal-cover", "cream-frame", "indigo-column", "slate-journal"] },
+  { id: "pro-pitch", heading: "Investor & Pitch Decks", tab: "professional", featured: true, noun: "Pitch Deck", looks: ["indigo-column", "teal-editorial", "copper-news", "slate-doc", "sandal-cover", "night-focus", "ivory-minimal", "cream-quote"] },
+  { id: "pro-marketing", heading: "Marketing Campaigns", tab: "professional", noun: "Marketing Campaign", looks: ["vermilion-bold", "teal-feature", "sandal-cover", "copper-news", "indigo-kinetic", "ivory-minimal", "gold-cinema", "rose-card"] },
+  { id: "pro-product", heading: "Product & E-commerce", tab: "professional", noun: "Product Creative", looks: ["night-focus", "teal-feature", "cream-frame", "sandal-cover", "ivory-minimal", "gold-cinema", "charcoal-label", "vermilion-bold"] },
+  { id: "pro-property", heading: "Real Estate & Architecture", tab: "professional", noun: "Property Showcase", looks: ["gold-cinema", "forest-journey", "teal-feature", "sandal-cover", "ivory-minimal", "slate-doc", "brass-wall", "cream-frame"] },
+  { id: "pro-finance", heading: "Finance & Consulting", tab: "professional", noun: "Finance Brief", looks: ["slate-doc", "indigo-column", "copper-time", "teal-editorial", "charcoal-mono", "ivory-minimal", "cream-quote", "copper-news"] },
+  { id: "pro-portfolio", heading: "Portfolio & Case Studies", tab: "professional", noun: "Portfolio Case Study", looks: ["sandal-cover", "teal-editorial", "slate-journal", "forest-journey", "ivory-minimal", "cream-frame", "charcoal-mono", "gold-cinema"] },
+  { id: "pro-linkedin", heading: "LinkedIn & Thought Leadership", tab: "professional", noun: "Professional Social Post", looks: ["indigo-column", "cream-quote", "teal-editorial", "copper-news", "ivory-minimal", "slate-doc", "charcoal-mono", "sandal-cover"] },
+  { id: "pro-training", heading: "Training & Workshops", tab: "professional", noun: "Training Material", looks: ["slate-journal", "cream-frame", "teal-editorial", "indigo-column", "ivory-minimal", "copper-time", "teal-multi", "cream-quote"] },
+  { id: "pro-events", heading: "Business Events & Webinars", tab: "professional", noun: "Business Event Creative", looks: ["sandal-cover", "teal-feature", "copper-news", "indigo-column", "gold-cinema", "rose-card", "cream-frame", "vermilion-bold"] },
+  { id: "pro-reports", heading: "Reports, Proposals & Documents", tab: "professional", noun: "Professional Document", looks: ["slate-journal", "indigo-column", "ivory-minimal", "cream-frame", "teal-editorial", "slate-doc", "copper-time", "charcoal-mono"] },
+
   { id: "memory", heading: "Memory", tab: "personal", noun: "Memory", looks: [...memoryLooks] },
   { id: "travel", heading: "Travel", tab: "personal", noun: "Travel", looks: ["forest-journey", "forest-scrap", "gold-cinema", "ivory-polaroid", "slate-journal", "brass-wall", "night-meaning", "teal-feature"] },
   { id: "diary", heading: "Diary", tab: "personal", noun: "Diary", looks: ["rose-diary", "slate-journal", "ivory-polaroid", "cream-quote", "forest-scrap", "night-meaning", "cream-frame", "indigo-sacred"] },
