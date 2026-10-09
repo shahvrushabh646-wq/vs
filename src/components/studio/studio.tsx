@@ -1213,16 +1213,19 @@ export function Studio() {
                   </div>
                   {shelves.map((section) => {
                     const cards = templatesIn(section.id);
+                    // Keep the category browser responsive: show a curated row first,
+                    // with the complete set available through "See all".
+                    const shelfCards = cards.slice(0, 8);
                     return (
                       <div className="shelf" key={section.id}>
                         <div className="shelfHead">
                           <h3>{section.heading}</h3>
                           <button className="textBtn" type="button" onClick={() => setOpenSection(section.id)}>
-                            See all
+                            See all {cards.length}
                           </button>
                         </div>
                         <div className="shelfRow">
-                          {cards.map((item) => (
+                          {shelfCards.map((item) => (
                             <TemplateCard
                               key={item.id}
                               template={item}
