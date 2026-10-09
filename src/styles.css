@@ -245,9 +245,8 @@ a.ghost {
 }
 .tabs {
   display: flex;
-  flex-wrap: wrap;
   gap: 6px;
-  overflow: visible;
+  overflow: auto;
   margin: 8px 0 12px;
 }
 .tab {
@@ -549,7 +548,7 @@ a.ghost {
   }
   .dock {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     position: fixed;
     left: 0;
     right: 0;

@@ -51,10 +51,9 @@ const LANGS: Record<string, string> = {
   Punjabi: "ਜੈ ਸ਼੍ਰੀ ਮਹਾਕਾਲ",
 };
 
-const NAV: Array<{ id: Workspace | "professional"; label: string; icon: typeof Images }> = [
+const NAV: Array<{ id: Workspace; label: string; icon: typeof Images }> = [
   { id: "media", label: "Media", icon: Images },
   { id: "templates", label: "Templates", icon: LayoutTemplate },
-  { id: "professional", label: "Reel Styles", icon: LayoutTemplate },
   { id: "music", label: "Music", icon: Music },
   { id: "type", label: "Type", icon: Type },
   { id: "preview", label: "Preview", icon: Clapperboard },
@@ -149,12 +148,12 @@ export function Studio() {
   const [nextOffset, setNextOffset] = useState<number | null>(null);
   const [searching, setSearching] = useState(false);
   const [mediaTab, setMediaTab] = useState<"all" | "image" | "video">("all");
-  const [templateId, setTemplateId] = useState(TEMPLATES.find((item) => item.sectionId === "reel-cinematic")?.id ?? TEMPLATES[0]!.id);
-  const [templateTab, setTemplateTab] = useState<TemplateTabId>("professional");
+  const [templateId, setTemplateId] = useState(TEMPLATES[0]!.id);
+  const [templateTab, setTemplateTab] = useState<TemplateTabId>("for-you");
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [templateQuery, setTemplateQuery] = useState("");
   const [speed, setSpeed] = useState<Speed>("medium");
-  const [duration, setDuration] = useState(TEMPLATES.find((item) => item.sectionId === "reel-cinematic")?.duration ?? TEMPLATES[0]!.duration);
+  const [duration, setDuration] = useState(TEMPLATES[0]!.duration);
   const [title, setTitle] = useState("");
   const [fontFamily, setFontFamily] = useState("Auto");
   const [fontScale, setFontScale] = useState(1);
@@ -653,28 +652,6 @@ export function Studio() {
       return;
     }
     const token = ++playToken.current;
-    // Resolve the first scene's video seeks before recording starts. Otherwise a slow
-    // first seek can leave the recorder capturing a stale/blank opening frame.
-    try {
-      sceneMark.current = -1;
-      await syncVideos(0);
-      const initialCtx = canvas.getContext("2d");
-      if (!initialCtx) throw new Error("Preview canvas is not available.");
-      const initial = paintFrame(initialCtx, paintInput(0.001, false));
-      if (!initial.drewMedia || initial.missingTitle || !frameHasContent(initialCtx)) {
-        throw new Error("The opening frame could not be rendered completely.");
-      }
-    } catch (error) {
-      for (const item of loadedRef.current.values()) item.video?.pause();
-      setPhase("failed");
-      setProgress("");
-      setQc(qcFail({
-        template: templateRef.current.name,
-        reason: error instanceof Error ? error.message : "Opening frame preparation failed.",
-        fix: "Re-select the affected video or use a photo, then Build Preview again.",
-      }));
-      return;
-    }
     const stream = canvas.captureStream(30);
     let exportAudio: HTMLAudioElement | null = null;
     const track = musicRef.current;
@@ -715,23 +692,17 @@ export function Studio() {
       return;
     }
     const chunks: Blob[] = [];
-    let recorderError: DOMException | null = null;
     recorder.ondataavailable = (event) => {
       if (event.data.size) chunks.push(event.data);
     };
     const stopped = new Promise<void>((resolve) => {
       recorder.onstop = () => resolve();
-      recorder.onerror = (event) => {
-        recorderError = (event as Event & { error?: DOMException }).error ?? new DOMException("Video recording failed.");
-      };
     });
-    // Emit regular chunks as well as the final stop chunk, so longer exports are
-    // less vulnerable to a single large buffered recording in browser memory.
-    recorder.start(1000);
+    recorder.start(200);
     setPhase("building");
     const started = performance.now();
     const total = durationRef.current;
-    sceneMark.current = 0;
+    sceneMark.current = -1;
     playingRef.current = true;
     while (playingRef.current && playToken.current === token) {
       const elapsed = (performance.now() - started) / 1000;
@@ -781,28 +752,9 @@ export function Studio() {
     if (ctx) paintFrame(ctx, paintInput(Math.max(0, total - 0.001), false));
     exportAudio?.pause();
     for (const item of loadedRef.current.values()) item.video?.pause();
-    try {
-      if (recorder.state !== "inactive") recorder.stop();
-      await stopped;
-    } catch (error) {
-      stream.getTracks().forEach((item) => item.stop());
-      setPhase("failed");
-      setProgress("");
-      setQc(qcFail({
-        template: templateRef.current.name,
-        reason: error instanceof Error ? error.message : "The recorder did not finalize the complete video.",
-        fix: "Keep this tab open and export again. If it repeats, try Chrome or Edge.",
-      }));
-      return;
-    } finally {
-      stream.getTracks().forEach((item) => item.stop());
-    }
-    if (recorderError) {
-      setPhase("failed");
-      setProgress("");
-      setQc(qcFail({ reason: recorderError.message, fix: "Export again in a current Chrome or Edge browser." }));
-      return;
-    }
+    recorder.stop();
+    await stopped;
+    stream.getTracks().forEach((item) => item.stop());
     const webm = new Blob(chunks, { type: mime });
     if (webm.size < 1024) {
       setPhase("failed");
@@ -876,27 +828,8 @@ export function Studio() {
         <nav>
           {NAV.map((item) => {
             const Icon = item.icon;
-            const active = item.id === "professional"
-              ? workspace === "templates" && templateTab === "professional"
-              : workspace === item.id;
             return (
-              <button
-                key={item.id}
-                data-testid={item.id === "professional" ? "professional-main-nav" : undefined}
-                className={active ? "active" : ""}
-                type="button"
-                aria-label={item.id === "professional" ? "Open Reel Styles" : item.label}
-                onClick={() => {
-                  if (item.id === "professional") {
-                    setWorkspace("templates");
-                    setTemplateTab("professional");
-                    setOpenSection(null);
-                    setTemplateQuery("");
-                  } else {
-                    setWorkspace(item.id);
-                  }
-                }}
-              >
+              <button key={item.id} className={workspace === item.id ? "active" : ""} type="button" onClick={() => setWorkspace(item.id)}>
                 <Icon size={18} />
                 {item.label}
               </button>
@@ -1087,7 +1020,7 @@ export function Studio() {
           {workspace === "templates" && (
             <section className="panel templates">
               <div className="row">
-                <h2>Reel Templates</h2>
+                <h2>Templates</h2>
                 <span className="note">{TEMPLATES.length} templates · 1080×1920</span>
               </div>
               <div className="searchRow">
@@ -1095,7 +1028,7 @@ export function Studio() {
                   className="field"
                   value={templateQuery}
                   aria-label="Search templates"
-                  placeholder="Search Reel templates — cinematic, photo slideshow, travel, festival, product…"
+                  placeholder="Search templates — Instagram Reel, poster, wedding, quote…"
                   onChange={(event) => {
                     setTemplateQuery(event.target.value);
                     setOpenSection(null);
@@ -1106,14 +1039,10 @@ export function Studio() {
                 {TEMPLATE_TABS.map((item) => (
                   <button
                     key={item.id}
-                    id={item.id === "professional" ? "professional-template-tab" : undefined}
-                    data-template-tab={item.id}
                     className={templateTab === item.id && !queryText ? "tab active" : "tab"}
                     type="button"
                     role="tab"
-                    aria-label={item.id === "professional" ? "Reel Styles" : item.label}
                     aria-selected={templateTab === item.id && !queryText}
-                    style={{ display: "inline-flex", flex: "0 0 auto", whiteSpace: "nowrap", visibility: "visible", opacity: 1 }}
                     onClick={() => {
                       setTemplateTab(item.id);
                       setOpenSection(null);
@@ -1213,19 +1142,16 @@ export function Studio() {
                   </div>
                   {shelves.map((section) => {
                     const cards = templatesIn(section.id);
-                    // Keep the category browser responsive: show a curated row first,
-                    // with the complete set available through "See all".
-                    const shelfCards = cards.slice(0, 8);
                     return (
                       <div className="shelf" key={section.id}>
                         <div className="shelfHead">
                           <h3>{section.heading}</h3>
                           <button className="textBtn" type="button" onClick={() => setOpenSection(section.id)}>
-                            See all {cards.length}
+                            See all
                           </button>
                         </div>
                         <div className="shelfRow">
-                          {shelfCards.map((item) => (
+                          {cards.map((item) => (
                             <TemplateCard
                               key={item.id}
                               template={item}
@@ -1471,26 +1397,8 @@ export function Studio() {
       <nav className="dock">
         {NAV.map((item) => {
           const Icon = item.icon;
-          const active = item.id === "professional"
-            ? workspace === "templates" && templateTab === "professional"
-            : workspace === item.id;
           return (
-            <button
-              key={item.id}
-              className={active ? "active" : ""}
-              type="button"
-              aria-label={item.id === "professional" ? "Open Reel Styles" : item.label}
-              onClick={() => {
-                if (item.id === "professional") {
-                  setWorkspace("templates");
-                  setTemplateTab("professional");
-                  setOpenSection(null);
-                  setTemplateQuery("");
-                } else {
-                  setWorkspace(item.id);
-                }
-              }}
-            >
+            <button key={item.id} className={workspace === item.id ? "active" : ""} type="button" onClick={() => setWorkspace(item.id)}>
               <Icon size={18} />
               {item.label}
             </button>
@@ -1519,16 +1427,10 @@ function MediaVisual({ asset }: { asset: MediaAsset }) {
 }
 
 function downloadBlob(blob: Blob, filename: string) {
-  // Keep the object URL alive long enough for large reels and slower downloads.
-  // Triggering a download from a detached anchor can be unreliable in some browsers.
-  const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
   link.href = url;
   link.download = filename;
-  link.style.display = "none";
-  document.body.appendChild(link);
   link.click();
-  link.remove();
-  // Do not revoke early: the browser may still be streaming the blob to disk.
-  window.setTimeout(() => URL.revokeObjectURL(url), 10 * 60 * 1000);
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
 }
