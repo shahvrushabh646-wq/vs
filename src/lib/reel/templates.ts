@@ -105,7 +105,8 @@ export type TemplateTabId =
   | "events"
   | "business"
   | "education"
-  | "personal";
+  | "personal"
+  | "professional";
 
 export type TemplateTab = { id: TemplateTabId; label: string };
 
@@ -120,6 +121,7 @@ export const TEMPLATE_TABS: TemplateTab[] = [
   { id: "business", label: "Business" },
   { id: "education", label: "Education" },
   { id: "personal", label: "Personal" },
+  { id: "professional", label: "Professional" },
 ];
 
 export type TemplateSection = {
