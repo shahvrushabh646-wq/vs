@@ -54,7 +54,7 @@ const LANGS: Record<string, string> = {
 const NAV: Array<{ id: Workspace | "professional"; label: string; icon: typeof Images }> = [
   { id: "media", label: "Media", icon: Images },
   { id: "templates", label: "Templates", icon: LayoutTemplate },
-  { id: "professional", label: "Professional", icon: LayoutTemplate },
+  { id: "professional", label: "Reel Styles", icon: LayoutTemplate },
   { id: "music", label: "Music", icon: Music },
   { id: "type", label: "Type", icon: Type },
   { id: "preview", label: "Preview", icon: Clapperboard },
@@ -885,7 +885,7 @@ export function Studio() {
                 data-testid={item.id === "professional" ? "professional-main-nav" : undefined}
                 className={active ? "active" : ""}
                 type="button"
-                aria-label={item.id === "professional" ? "Open Professional templates" : item.label}
+                aria-label={item.id === "professional" ? "Open Reel Styles" : item.label}
                 onClick={() => {
                   if (item.id === "professional") {
                     setWorkspace("templates");
@@ -1095,7 +1095,7 @@ export function Studio() {
                   className="field"
                   value={templateQuery}
                   aria-label="Search templates"
-                  placeholder="Search templates — Instagram Reel, poster, wedding, quote…"
+                  placeholder="Search Reel templates — cinematic, photo slideshow, travel, festival, product…"
                   onChange={(event) => {
                     setTemplateQuery(event.target.value);
                     setOpenSection(null);
@@ -1111,7 +1111,7 @@ export function Studio() {
                     className={templateTab === item.id && !queryText ? "tab active" : "tab"}
                     type="button"
                     role="tab"
-                    aria-label={item.id === "professional" ? "Professional templates" : item.label}
+                    aria-label={item.id === "professional" ? "Reel Styles" : item.label}
                     aria-selected={templateTab === item.id && !queryText}
                     style={{ display: "inline-flex", flex: "0 0 auto", whiteSpace: "nowrap", visibility: "visible", opacity: 1 }}
                     onClick={() => {
@@ -1479,7 +1479,7 @@ export function Studio() {
               key={item.id}
               className={active ? "active" : ""}
               type="button"
-              aria-label={item.id === "professional" ? "Open Professional templates" : item.label}
+              aria-label={item.id === "professional" ? "Open Reel Styles" : item.label}
               onClick={() => {
                 if (item.id === "professional") {
                   setWorkspace("templates");
