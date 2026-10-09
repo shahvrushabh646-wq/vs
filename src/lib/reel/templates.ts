@@ -251,7 +251,7 @@ export const SECTIONS: TemplateSection[] = [
   { id: "reel-launch", heading: "Launch & Announcement Reels", tab: "professional", noun: "Launch Reel", looks: ["gold-cinema","teal-feature","vermilion-bold","night-focus","sandal-cover","copper-news","ivory-minimal","rose-card"] },
   { id: "reel-quote", heading: "Quotes & Short Stories", tab: "professional", noun: "Quote Reel", looks: ["cream-quote","ivory-minimal","night-meaning","charcoal-mono","indigo-kinetic","rose-card","slate-journal","gold-sacred"] },
   { id: "reel-seasonal", heading: "Seasonal & Celebration Edits", tab: "professional", noun: "Seasonal Reel", looks: ["marigold-fest","marigold-burst","brass-temple","gold-sacred","vermilion-crowd","sandal-devotion","gold-cinema","rose-card"] },
-  { id: "reel-memory-film", heading: "Memory Film & Photo Diary", tab: "professional", noun: "Memory Film Reel", looks: undefined },
+  { id: "reel-memory-film", heading: "Memory Film & Photo Diary", tab: "professional", noun: "Memory Film Reel", looks: ["ivory-polaroid","rose-diary","forest-scrap","forest-journey","night-meaning","brass-wall","cream-frame","gold-grid"] },
 
   { id: "memory", heading: "Memory", tab: "personal", noun: "Memory", looks: [...memoryLooks] },
   { id: "travel", heading: "Travel", tab: "personal", noun: "Travel", looks: ["forest-journey", "forest-scrap", "gold-cinema", "ivory-polaroid", "slate-journal", "brass-wall", "night-meaning", "teal-feature"] },
