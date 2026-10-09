@@ -6,6 +6,13 @@ const root = process.cwd();
 const archive = path.join(root, "gDFrm1D7ladISGL6-grok-workspace.zip");
 const temp = path.join(root, ".vercel-workspace-extract");
 
+// On source-editing branches the workspace is already materialized at the repo root.
+// Skip ZIP overlaying so tracked template changes are not overwritten during deployment.
+if (fs.existsSync(path.join(root, "package.json")) && fs.existsSync(path.join(root, "src"))) {
+  console.log("App source already exists at repository root; preserving tracked source files.");
+  process.exit(0);
+}
+
 if (!fs.existsSync(archive)) {
   throw new Error("Workspace ZIP is missing: " + path.basename(archive));
 }
