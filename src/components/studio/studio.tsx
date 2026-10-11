@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Clapperboard, Images, LayoutTemplate, Music, Type } from "lucide-react";
+import { Clapperboard, Images, LayoutTemplate, Music, Sparkles, Type } from "lucide-react";
 import type { PaintInput } from "@/lib/reel/engine";
 import { frameHasContent, paintFrame } from "@/lib/reel/engine";
 import { ensureFonts, loadAsset, loadThumb, proxied, releaseVideo, seekVideo, videoTimeFor, type LoadedMedia } from "@/lib/reel/load-media";
 import { buildScenes, coversSelection, demoAssets, desiredSlots, durationFor, locate, sceneDurations, transitionSeconds } from "@/lib/reel/sequence";
 import { getTemplate, sectionsFor, SECTIONS, TEMPLATE_TABS, templatesIn, TEMPLATES, type TemplateTabId } from "@/lib/reel/templates";
-import type { MediaAsset, Scene, SearchPayload, Speed, Template } from "@/lib/reel/types";
+import type { MediaAsset, MotionId, Scene, SearchPayload, Speed, Template, TransitionId } from "@/lib/reel/types";
 import { qcFail } from "@/lib/reel/types";
 
-type Workspace = "media" | "templates" | "music" | "type" | "preview";
+type Workspace = "media" | "templates" | "animate" | "music" | "type" | "preview";
 type Phase = "idle" | "building" | "ready" | "playing" | "failed";
 type Track = {
   id: string;
@@ -55,6 +55,7 @@ const NAV: Array<{ id: Workspace | "professional"; label: string; icon: typeof I
   { id: "media", label: "Media", icon: Images },
   { id: "templates", label: "Templates", icon: LayoutTemplate },
   { id: "professional", label: "Professional", icon: LayoutTemplate },
+  { id: "animate", label: "Animate", icon: Sparkles },
   { id: "music", label: "Music", icon: Music },
   { id: "type", label: "Type", icon: Type },
   { id: "preview", label: "Preview", icon: Clapperboard },
@@ -150,6 +151,9 @@ export function Studio() {
   const [searching, setSearching] = useState(false);
   const [mediaTab, setMediaTab] = useState<"all" | "image" | "video">("all");
   const [templateId, setTemplateId] = useState(TEMPLATES.find((item) => item.sectionId === "reel-cinematic")?.id ?? TEMPLATES[0]!.id);
+  const initialTemplate = TEMPLATES.find((item) => item.sectionId === "reel-cinematic") ?? TEMPLATES[0]!;
+  const [motionPreset, setMotionPreset] = useState<MotionId>(initialTemplate.motion);
+  const [transitionPreset, setTransitionPreset] = useState<TransitionId>(initialTemplate.transition);
   const [templateTab, setTemplateTab] = useState<TemplateTabId>("professional");
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [templateQuery, setTemplateQuery] = useState("");
@@ -172,7 +176,8 @@ export function Studio() {
   const [musicStart, setMusicStart] = useState(0);
   const [musicEnd, setMusicEnd] = useState(15);
 
-  const template = getTemplate(templateId) ?? TEMPLATES[0]!;
+  const baseTemplate = getTemplate(templateId) ?? TEMPLATES[0]!;
+  const template: Template = { ...baseTemplate, motion: motionPreset, transition: transitionPreset };
   const selectedRef = useRef(selected);
   const templateRef = useRef(template);
   const speedRef = useRef(speed);
@@ -401,7 +406,8 @@ export function Studio() {
 
   async function runBuild(options: { autoplay: boolean; demo: boolean; templateId?: string }) {
     if (buildingRef.current) return false;
-    const chosen = getTemplate(options.templateId || templateRef.current.id) ?? templateRef.current;
+    const baseChosen = getTemplate(options.templateId || templateRef.current.id) ?? templateRef.current;
+    const chosen: Template = options.templateId ? baseChosen : { ...baseChosen, motion: templateRef.current.motion, transition: templateRef.current.transition };
     templateRef.current = chosen;
     if (options.templateId) setTemplateId(chosen.id);
     const demo = options.demo;
@@ -611,6 +617,8 @@ export function Studio() {
     const chosen = getTemplate(id);
     if (!chosen) return;
     setTemplateId(id);
+    setMotionPreset(chosen.motion);
+    setTransitionPreset(chosen.transition);
     templateRef.current = chosen;
     const nextDuration = durationFor(chosen, speedRef.current);
     setDuration(nextDuration);
@@ -1247,6 +1255,75 @@ export function Studio() {
                   })}
                 </>
               )}
+            </section>
+          )}
+          {workspace === "animate" && (
+            <section className="panel">
+              <div className="row"><h2>Motion &amp; transitions</h2><span className="note">Canva-style controls · rendered locally</span></div>
+              <p className="status">Add cinematic movement to your selected photos. Your media selection stays in your control.</p>
+              <div className="mediaLayout">
+                <div className="panel">
+                  <label className="slider">Camera movement
+                    <select className="select" value={motionPreset} onChange={(event) => {
+                      const next = event.target.value as MotionId;
+                      setMotionPreset(next);
+                      templateRef.current = { ...templateRef.current, motion: next };
+                      invalidateReady("Camera motion changed. Build Preview again.");
+                    }}>
+                      <option value="slow-push">Cinematic push-in</option><option value="slow-pull">Slow pull-back</option>
+                      <option value="pan-left">Pan left</option><option value="pan-right">Pan right</option>
+                      <option value="pan-up">Pan upward</option><option value="reveal">Gentle reveal</option>
+                      <option value="diagonal">Diagonal drift</option><option value="crop-punch">Dynamic punch-in</option>
+                      <option value="drift">Subtle floating drift</option>
+                    </select>
+                  </label>
+                  <label className="slider" style={{ marginTop: 14 }}>Scene transition
+                    <select className="select" value={transitionPreset} onChange={(event) => {
+                      const next = event.target.value as TransitionId;
+                      setTransitionPreset(next);
+                      templateRef.current = { ...templateRef.current, transition: next };
+                      invalidateReady("Transition changed. Build Preview again.");
+                    }}>
+                      <option value="crossfade">Smooth crossfade</option><option value="fade">Fade to black</option>
+                      <option value="slide">Cinematic slide</option><option value="wipe">Directional wipe</option>
+                      <option value="film-cut">Film cut</option><option value="flash">Beat flash</option>
+                      <option value="reveal">Reveal</option><option value="mask">Masked reveal</option><option value="hard">Clean hard cut</option>
+                    </select>
+                  </label>
+                  <label className="slider" style={{ marginTop: 14 }}>Reel pacing
+                    <select className="select" value={speed} onChange={(event) => {
+                      const next = event.target.value as Speed;
+                      setSpeed(next);
+                      const nextDuration = durationFor(template, next);
+                      setDuration(nextDuration);
+                      durationRef.current = nextDuration;
+                      if (readyRef.current) invalidateReady("Pacing changed. Build Preview again.");
+                    }}>
+                      <option value="slow">Slow devotional</option><option value="medium">Balanced cinematic</option>
+                      <option value="fast">Fast festival energy</option><option value="mixed">Slow-to-fast mix</option>
+                    </select>
+                  </label>
+                  <div className="row" style={{ marginTop: 16 }}>
+                    <button className="primary" type="button" onClick={() => { setWorkspace("preview"); void runBuild({ autoplay: true, demo: selected.length === 0 }); }}>Preview motion</button>
+                    <button className="ghost" type="button" onClick={() => {
+                      setMotionPreset(baseTemplate.motion);
+                      setTransitionPreset(baseTemplate.transition);
+                      templateRef.current = baseTemplate;
+                      invalidateReady("Template motion restored. Build Preview to render it.");
+                    }}>Reset to template</button>
+                  </div>
+                </div>
+                <aside className="panel">
+                  <h3>What these controls do</h3>
+                  <div className="trace">
+                    <div><b>01</b><span><strong>Photo animation</strong><br />Adds a controlled push, pull, pan or drift to still photos.</span></div>
+                    <div><b>02</b><span><strong>Transitions</strong><br />Changes how one scene moves into the next.</span></div>
+                    <div><b>03</b><span><strong>Pacing</strong><br />Adjusts movement intensity and scene timing.</span></div>
+                    <div><b>04</b><span><strong>Selected media only</strong><br />Nothing is added automatically.</span></div>
+                  </div>
+                  <p className="note" style={{ marginTop: 12 }}>True AI image-to-video, background removal and AI voice need a connected model/service and its own usage limits. This panel does not pretend to generate AI footage.</p>
+                </aside>
+              </div>
             </section>
           )}
           {workspace === "music" && (
