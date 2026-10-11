@@ -21,5 +21,7 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
+      - name: Run unit tests
+        run: npm test
       - name: Build with the Vercel build command
         run: npm run build:vercel
