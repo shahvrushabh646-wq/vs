@@ -261,6 +261,10 @@ export const SECTIONS: TemplateSection[] = [
   { id: "mood", heading: "Mood Boards", tab: "personal", noun: "Mood Board", looks: ["ivory-dgrid", "brass-wall", "gold-grid", "teal-multi", "rose-crop", "forest-scrap", "charcoal-mono", "cream-frame"] },
   { id: "minimal", heading: "Minimal", tab: "personal", noun: "Minimal", looks: ["ivory-minimal", "cream-quote", "charcoal-mono", "night-meaning", "cream-frame", "slate-journal", "night-focus", "gold-sacred"] },
   { id: "whiteboard", heading: "Whiteboard", tab: "personal", noun: "Whiteboard", looks: ["ivory-minimal", "slate-journal", "ivory-dgrid", "cream-quote", "teal-multi", "indigo-column", "cream-frame", "copper-time"] },
+  // Curated production presets adapted from the uploaded Reel Maker concept.
+  // These use the existing rendering engine and real media pipeline.
+  { id: "production-12", heading: "Professional Reel Production · 12 Presets", tab: "professional", featured: true, noun: "Production Reel", looks: ["gold-cinema", "marigold-fest", "gold-sacred", "forest-heritage", "brass-temple", "night-focus", "ivory-minimal", "teal-feature", "copper-news", "ivory-polaroid", "indigo-kinetic", "night-finale"] },
+
 ];
 
 const FRAME = ["top rule", "bottom rule", "side rail", "letterbox", "vignette", "outer frame"];
